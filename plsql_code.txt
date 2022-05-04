@@ -1,0 +1,46 @@
+DECLARE 
+xact_no account.act_no%type;
+xact_balance account.act_balance%type;
+opt number(1); 
+deposit number(10);
+withdrawal number(10);
+
+BEGIN
+xact_no:= :Enter_Account_Number;
+opt:= :1Deposit_2Withdrawal_3Balance;  
+select act_balance into xact_balance 
+from account
+where act_no=xact_no ; 
+  
+IF( opt = 1 ) THEN
+deposit:= :Enter_Deposit_Amount;
+update account
+ set act_balance=act_balance+deposit
+where act_no=xact_no ; 
+
+xact_balance :=xact_balance +deposit;
+dbms_output.put_line('Rs. '||deposit||' has been creadited in your account');
+dbms_output.put_line('Your final balance is Rs. '||xact_balance );
+                          
+ELSIF( opt = 2 ) THEN 
+withdrawal:= :Enter_Withdrawal_Amount;
+    IF ( withdrawal<=xact_balance ) THEN
+    update account
+     set act_balance=act_balance-withdrawal
+    where act_no=xact_no ;
+    
+    xact_balance:=xact_balance -withdrawal;
+    dbms_output.put_line('Rs. '||withdrawal||' has been debited in your account');
+    dbms_output.put_line('Your final balance is Rs.'||xact_balance );
+    
+    ELSE
+    dbms_output.put_line('Your withdrawal amount is greater than balance');
+    dbms_output.put_line('Your transaction failed');
+    dbms_output.put_line('Your final balance is Rs.'||xact_balance ); 
+    END IF;
+ELSE
+dbms_output.put_line('Your balance is Rs. '||xact_balance );
+END IF;
+    
+  
+END;
